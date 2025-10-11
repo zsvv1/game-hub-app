@@ -1,4 +1,4 @@
-# Game Hub App 🎮  
+# Game Hub App  
 
 **Description:**  
 A mobile application that organizes, tracks, and launches installed games. Designed to simplify access and management for gamers using a clean and modern interface.  
