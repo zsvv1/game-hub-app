@@ -1,15 +1,29 @@
-<?xml version="1.0" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="utf-8" ?>
 <Shell
     x:Class="GameHub.Mobile.AppShell"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:local="clr-namespace:GameHub.Mobile"
-    Shell.FlyoutBehavior="Disabled"
-    Title="GameHub.Mobile">
+    xmlns:pages="clr-namespace:GameHub.Mobile.Pages;assembly=GameHub.Mobile"
+    Shell.FlyoutBehavior="Disabled">
 
+    <!-- Login page -->
     <ShellContent
-        Title="Home"
-        ContentTemplate="{DataTemplate local:MainPage}"
-        Route="MainPage" />
+        Title="Login"
+        Route="LoginPage"
+        ContentTemplate="{DataTemplate pages:LoginPage}" />
 
+    <TabBar>
+        <Tab Title="Games">
+            <ShellContent
+                Title="Games"
+                Route="GamesPage"
+                ContentTemplate="{DataTemplate pages:GamesPage}" />
+        </Tab>
+        <Tab Title="Players">
+            <ShellContent
+                Title="Players"
+                Route="PlayersPage"
+                ContentTemplate="{DataTemplate pages:PlayersPage}" />
+        </Tab>
+    </TabBar>
 </Shell>

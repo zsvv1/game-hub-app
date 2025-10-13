@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="GameHub.Mobile.Pages.PlayersPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    Title="Players">
+
+    <VerticalStackLayout Padding="12" Spacing="8">
+        <HorizontalStackLayout Spacing="8">
+            <Entry x:Name="SearchEntry" Placeholder="Search players..." HorizontalOptions="FillAndExpand" />
+            <Button x:Name="SearchButton" Text="Search" />
+        </HorizontalStackLayout>
+
+        <CollectionView x:Name="PlayersList" HeightRequest="400">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Grid Padding="8" ColumnDefinitions="*,Auto">
+                        <VerticalStackLayout>
+                            <Label Text="{Binding Name}" FontAttributes="Bold" />
+                            <Label Text="{Binding Email}" FontSize="12" />
+                        </VerticalStackLayout>
+                        <HorizontalStackLayout Grid.Column="1" Spacing="6">
+                            <Button Text="Edit"
+                                    Clicked="OnEditClicked"
+                                    CommandParameter="{Binding .}" />
+                            <Button Text="Del"
+                                    Clicked="OnDeleteClicked"
+                                    CommandParameter="{Binding .}" />
+                        </HorizontalStackLayout>
+                    </Grid>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <Entry x:Name="NameEntry"  Placeholder="Name" />
+        <Entry x:Name="EmailEntry" Placeholder="Email (optional)" Keyboard="Email" />
+        <Button x:Name="AddButton" Text="Add / Update" />
+        <Label x:Name="StatusLabel" TextColor="Red" />
+    </VerticalStackLayout>
+</ContentPage>
