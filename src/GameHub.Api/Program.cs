@@ -12,6 +12,16 @@ builder.Services.AddDbContext<AppDbContext>(opt =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// --- CORS (allow local dev + emulator) ---
+builder.Services.AddCors(opt =>
+{
+    opt.AddPolicy("AllowAll",
+        p => p
+            .AllowAnyOrigin()
+            .AllowAnyHeader()
+            .AllowAnyMethod());
+});
+
 var app = builder.Build();
 
 // --- Ensure database exists on startup ---
@@ -20,6 +30,8 @@ using (var scope = app.Services.CreateScope())
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     db.Database.EnsureCreated();
 }
+
+app.UseCors("AllowAll");
 
 // --- Swagger for easy testing ---
 if (app.Environment.IsDevelopment())
