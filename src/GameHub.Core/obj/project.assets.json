@@ -14,11 +14,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Projects\\game-hub-app\\game-hub-app\\GameHub.Core\\GameHub.Core.csproj",
+      "projectUniqueName": "C:\\Projects\\game-hub-app\\game-hub-app\\src\\GameHub.Core\\GameHub.Core.csproj",
       "projectName": "GameHub.Core",
-      "projectPath": "C:\\Projects\\game-hub-app\\game-hub-app\\GameHub.Core\\GameHub.Core.csproj",
+      "projectPath": "C:\\Projects\\game-hub-app\\game-hub-app\\src\\GameHub.Core\\GameHub.Core.csproj",
       "packagesPath": "C:\\Users\\omari\\.nuget\\packages\\",
-      "outputPath": "C:\\Projects\\game-hub-app\\game-hub-app\\GameHub.Core\\obj\\",
+      "outputPath": "C:\\Projects\\game-hub-app\\game-hub-app\\src\\GameHub.Core\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

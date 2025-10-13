@@ -1,0 +1,19 @@
+# .NET / Visual Studio
+**/bin/
+**/obj/
+.vs/
+.vscode/
+*.user
+*.suo
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# SQLite (don’t commit local DB)
+*.db
+*.db-shm
+*.db-wal
+
+# Logs
+*.log

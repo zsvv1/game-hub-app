@@ -1,44 +1,160 @@
+using System.ComponentModel.DataAnnotations;
+using Microsoft.EntityFrameworkCore;
+using GameHub.Api.Data;
+using GameHub.Core.Models;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+// --- Services ---
+builder.Services.AddDbContext<AppDbContext>(opt =>
+    opt.UseSqlite("Data Source=gamehub.db"));  // SQLite file in the API folder
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// --- Ensure database exists on startup ---
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    db.Database.EnsureCreated();
+}
+
+// --- Swagger for easy testing ---
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+// Simple health check
+app.MapGet("/", () => Results.Ok("Game Hub API running"));
 
-var summaries = new[]
+// Helper: validate using DataAnnotations
+static (bool ok, Dictionary<string, string[]>? errors) Validate<T>(T model)
 {
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
+    var ctx = new ValidationContext(model!);
+    var results = new List<ValidationResult>();
+    var ok = Validator.TryValidateObject(model!, ctx, results, validateAllProperties: true);
 
-app.MapGet("/weatherforecast", () =>
+    if (ok) return (true, null);
+
+    var dict = results
+        .GroupBy(r => r.MemberNames.FirstOrDefault() ?? string.Empty)
+        .ToDictionary(
+            g => string.IsNullOrWhiteSpace(g.Key) ? "General" : g.Key,
+            g => g.Select(r => r.ErrorMessage ?? "Invalid value").ToArray()
+        );
+
+    return (false, dict);
+}
+
+// ====================== GAMES ======================
+app.MapGet("/api/games", async (string? search, AppDbContext db) =>
 {
-    var forecast =  Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
-})
-.WithName("GetWeatherForecast")
-.WithOpenApi();
+    var q = db.Games.AsQueryable();
+    if (!string.IsNullOrWhiteSpace(search))
+        q = q.Where(g => g.Name.Contains(search));
+    var list = await q.OrderBy(g => g.Name).ToListAsync();
+    return Results.Ok(list);
+});
+
+app.MapGet("/api/games/{id:int}", async (int id, AppDbContext db) =>
+{
+    var game = await db.Games.FindAsync(id);
+    return game is null ? Results.NotFound() : Results.Ok(game);
+});
+
+app.MapPost("/api/games", async (Game input, AppDbContext db) =>
+{
+    var v = Validate(input);
+    if (!v.ok) return Results.ValidationProblem(v.errors!);
+
+    db.Games.Add(input);
+    await db.SaveChangesAsync();
+    return Results.Created($"/api/games/{input.Id}", input);
+});
+
+app.MapPut("/api/games/{id:int}", async (int id, Game input, AppDbContext db) =>
+{
+    if (id != input.Id) return Results.BadRequest(new { message = "Id mismatch" });
+
+    var v = Validate(input);
+    if (!v.ok) return Results.ValidationProblem(v.errors!);
+
+    var existing = await db.Games.FindAsync(id);
+    if (existing is null) return Results.NotFound();
+
+    existing.Name = input.Name;
+    existing.Genre = input.Genre;
+    existing.ReleaseYear = input.ReleaseYear;
+
+    await db.SaveChangesAsync();
+    return Results.NoContent();
+});
+
+app.MapDelete("/api/games/{id:int}", async (int id, AppDbContext db) =>
+{
+    var existing = await db.Games.FindAsync(id);
+    if (existing is null) return Results.NotFound();
+
+    db.Games.Remove(existing);
+    await db.SaveChangesAsync();
+    return Results.NoContent();
+});
+
+// ====================== PLAYERS ======================
+app.MapGet("/api/players", async (string? search, AppDbContext db) =>
+{
+    var q = db.Players.AsQueryable();
+    if (!string.IsNullOrWhiteSpace(search))
+        q = q.Where(p => p.Name.Contains(search));
+    var list = await q.OrderBy(p => p.Name).ToListAsync();
+    return Results.Ok(list);
+});
+
+app.MapGet("/api/players/{id:int}", async (int id, AppDbContext db) =>
+{
+    var player = await db.Players.FindAsync(id);
+    return player is null ? Results.NotFound() : Results.Ok(player);
+});
+
+app.MapPost("/api/players", async (Player input, AppDbContext db) =>
+{
+    var v = Validate(input);
+    if (!v.ok) return Results.ValidationProblem(v.errors!);
+
+    db.Players.Add(input);
+    await db.SaveChangesAsync();
+    return Results.Created($"/api/players/{input.Id}", input);
+});
+
+app.MapPut("/api/players/{id:int}", async (int id, Player input, AppDbContext db) =>
+{
+    if (id != input.Id) return Results.BadRequest(new { message = "Id mismatch" });
+
+    var v = Validate(input);
+    if (!v.ok) return Results.ValidationProblem(v.errors!);
+
+    var existing = await db.Players.FindAsync(id);
+    if (existing is null) return Results.NotFound();
+
+    existing.Name = input.Name;
+    existing.Email = input.Email;
+
+    await db.SaveChangesAsync();
+    return Results.NoContent();
+});
+
+app.MapDelete("/api/players/{id:int}", async (int id, AppDbContext db) =>
+{
+    var existing = await db.Players.FindAsync(id);
+    if (existing is null) return Results.NotFound();
+
+    db.Players.Remove(existing);
+    await db.SaveChangesAsync();
+    return Results.NoContent();
+});
 
 app.Run();
-
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
