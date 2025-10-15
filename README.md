@@ -1,19 +1,20 @@
-# Game Hub App  
+# Game Hub App
 
-**Description:**  
-A mobile application that organizes, tracks, and launches installed games. Designed to simplify access and management for gamers using a clean and modern interface.  
+A small portfolio project demonstrating a clean **full-stack** workflow with a
+**.NET 8 Web API** (CRUD + validation + JWT auth) and a **.NET MAUI** mobile
+client (tabs for *Games* and *Players*).
 
-**Technologies Used:**  
-- Ionic Framework  
-- Angular  
-- TypeScript  
-- RESTful APIs  
+This project exists to validate the resume line:
 
-**Key Features:**  
-- Local storage for user preferences and game list  
-- CRUD operations for managing games  
-- Game launch integration  
-- Responsive layout optimized for Android devices  
+> **“Developed a full-stack .NET application with CRUD features, validation, OOP design, JWT auth, and QA testing via Swagger/Postman.”**
 
-**Project Purpose:**  
-Created as a personal project to demonstrate hybrid mobile development skills and modern UI/UX design approaches using Angular and Ionic.
+---
+
+## Tech Stack
+
+- **Backend:** .NET 8, ASP.NET Core Minimal APIs, Entity Framework Core (SQLite)
+- **Auth:** JWT Bearer
+- **Validation:** System.ComponentModel.DataAnnotations
+- **Mobile:** .NET MAUI (Tabs: Games, Players)
+- **Tooling:** Swagger (OpenAPI), Postman, VS Code / Visual Studio
+- **CI-proof:** `docs/` screenshots + commit history
